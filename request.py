@@ -1,3 +1,4 @@
+в таблицу описанную моделью 
 class Model1(Base):
     __tablename__ = "pledgeSecurities"
     __table_args__ = {'extend_existing': True}
@@ -7,37 +8,17 @@ class Model1(Base):
     pledge_type_id: Mapped[int]
     sb_id: Mapped[str_50]
     security_name: Mapped[Optional[str]]
-    issuer: Mapped[Optional[str_255]]
-    right_depository: Mapped[Optional[str_255]]
-    issue_num: Mapped[Optional[str_255]]
-    registration_num: Mapped[Optional[str_255]]
-    registration_dt: Mapped[Optional[str_50]]
-    nominal: Mapped[Optional[num_22_2]]
-    nom_curry: Mapped[Optional[str_50]]
-    security_amt: Mapped[Optional[int]]
-    bonds_dep_trm: Mapped[Optional[str_50]]
-    assessed_val: Mapped[Optional[num_22_2]]
-    collateral_val_curry: Mapped[Optional[str_50]]
-    collateral_disc_amt: Mapped[Optional[num_22_2]]
     collateral_val_amt: Mapped[Optional[num_22_2]]
     createdAt: Mapped[created_at]
     updatedAt: Mapped[updated_at]
 
-
+записываю датафрейм с атрибутами
 file_id: Mapped[int]
-    pledge_type_id: Mapped[int]
-    sb_id: Mapped[str_50]
-    security_name: Mapped[Optional[str]]
-    issuer: Mapped[Optional[str_255]]
-    right_depository: Mapped[Optional[str_255]]
-    issue_num: Mapped[Optional[str_255]]
-    registration_num: Mapped[Optional[str_255]]
-    registration_dt: Mapped[Optional[str_50]]
-    nominal: Mapped[Optional[num_22_2]]
-    nom_curry: Mapped[Optional[str_50]]
-    security_amt: Mapped[Optional[int]]
-    bonds_dep_trm: Mapped[Optional[str_50]]
-    assessed_val: Mapped[Optional[num_22_2]]
-    collateral_val_curry: Mapped[Optional[str_50]]
-    collateral_disc_amt: Mapped[Optional[num_22_2]]
-    collateral_val_amt: Mapped[Optional[num_22_2]]
+pledge_type_id: Mapped[int]
+sb_id: Mapped[str_50]
+security_name: Mapped[Optional[str]]   
+collateral_val_amt: Mapped[Optional[num_22_2]]
+
+через df.to_sql()
+возникает ошибка:
+"detail": "(psycopg2.errors.NotNullViolation) null value in column \"createdAt\" of relation \"commonAttributes\" violates not-null constraint
