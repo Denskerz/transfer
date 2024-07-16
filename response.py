@@ -1,16 +1,23 @@
 # main.py
 from fastapi import FastAPI
 from apscheduler.schedulers.background import BackgroundScheduler
-from scheduled_task import run_scheduled_task
+import requests
 
 app = FastAPI()
 
-# Создаем экземпляр планировщика
 scheduler = BackgroundScheduler()
 
-# Функция, которая будет вызываться по расписанию
+@app.post("/scheduled_task")
+def run_scheduled_task():
+    # Логика вашей запланированной задачи
+    response = requests.get("https://api.example.com/data")
+    # Обработка полученных данных
+    print("Запланированная задача выполнена.")
+    return {"message": "Запланированная задача успешно выполнена"}
+
 def scheduled_task():
-    run_scheduled_task()
+    # Вызов POST-эндпоинта
+    requests.post("http://your-server.com/scheduled_task")
 
 # Настраиваем расписание
 scheduler.add_job(id='scheduled_task', func=scheduled_task, trigger='cron', minute=0, hour=7, day=1)
