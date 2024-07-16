@@ -1,19 +1,59 @@
-import schedule
-import time
-from datetime import datetime, date, timedelta
+/values.yaml:
 
-def task_at_start_of_previous_month():
-    # Получаем дату первого числа прошлого месяца
-    today = date.today()
-    first_of_previous_month = date(today.year, today.month, 1) - timedelta(days=1)
-    first_of_previous_month = first_of_previous_month.replace(day=1)
+global:
+  namespace: bzi
+  nexus:
+    cred: nexus-cred 
+    host: nexus3-ift.sigma-belpsb.by
+    port: 5048
 
-    print(f"Эта задача выполняется в 7:00 первого числа предыдущего месяца - {first_of_previous_month.strftime('%B %Y')}")
+deployment:
+  profile: ift
+  replicas: 1
+  port: 8040
+  pullPolicy: Always
+  image:
+    tag: latest
+    path: /excel-service
+  resources:
+    limits:
+      cpu: '2'
+      memory: '2Gi'
+    requests:
+      cpu: '2'
+      memory: '2Gi'
+  initialDelay: 20
+  period: 5        
+  timeout: 3       
 
-# Запланируйте выполнение задачи в 7:00 первого числа каждого месяца
-schedule.every().month.on(1).at("07:00").do(task_at_start_of_previous_month).tag("start_of_previous_month")
+ingress:
+  host: excel-service.apps.k8s-ift.sigma-belpsb.by
+  rootPath: /*
 
-# Главный цикл, который будет проверять и выполнять запланированные задачи
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+
+/templates/ingress.yaml:
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Chart.Name }}-ingress
+  namespace: {{ .Values.global.namespace }}
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+  labels:
+    app: {{ .Chart.Name }}
+spec:
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: {{ .Values.ingress.rootPath }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Chart.Name }}-service
+                port:
+                  number: {{ .Values.deployment.port }}
+
+
+
