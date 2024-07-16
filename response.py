@@ -1,59 +1,21 @@
-/values.yaml:
+# main.py
+from fastapi import FastAPI
+from apscheduler.schedulers.background import BackgroundScheduler
+from scheduled_task import run_scheduled_task
 
-global:
-  namespace: bzi
-  nexus:
-    cred: nexus-cred 
-    host: nexus3-ift.sigma-belpsb.by
-    port: 5048
+app = FastAPI()
 
-deployment:
-  profile: ift
-  replicas: 1
-  port: 8040
-  pullPolicy: Always
-  image:
-    tag: latest
-    path: /excel-service
-  resources:
-    limits:
-      cpu: '2'
-      memory: '2Gi'
-    requests:
-      cpu: '2'
-      memory: '2Gi'
-  initialDelay: 20
-  period: 5        
-  timeout: 3       
+# Создаем экземпляр планировщика
+scheduler = BackgroundScheduler()
 
-ingress:
-  host: excel-service.apps.k8s-ift.sigma-belpsb.by
-  rootPath: /*
+# Функция, которая будет вызываться по расписанию
+def scheduled_task():
+    run_scheduled_task()
 
+# Настраиваем расписание
+scheduler.add_job(id='scheduled_task', func=scheduled_task, trigger='cron', minute=0, hour=7, day=1)
+scheduler.start()
 
-/templates/ingress.yaml:
-
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: {{ .Chart.Name }}-ingress
-  namespace: {{ .Values.global.namespace }}
-  annotations:
-    nginx.ingress.kubernetes.io/use-regex: "true"
-  labels:
-    app: {{ .Chart.Name }}
-spec:
-  rules:
-    - host: {{ .Values.ingress.host }}
-      http:
-        paths:
-          - path: {{ .Values.ingress.rootPath }}
-            pathType: Prefix
-            backend:
-              service:
-                name: {{ .Chart.Name }}-service
-                port:
-                  number: {{ .Values.deployment.port }}
-
-
-
+@app.get("/")
+def root():
+    return {"message": "Приложение работает"}
