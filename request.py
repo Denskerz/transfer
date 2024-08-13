@@ -1,6 +1,1 @@
-        last_item = exec_query(conn_args=conn_args,
-                               sql_query=f'select * from "{settings.DB_SCHEMA}"."commonAttributes" order by id limit 1;')
-        if last_item.empty:
-            file_id = 0
-        else:
-            file_id = last_item["file_id"].squeeze()
+Error: UPGRADE FAILED: error validating "": error validating data: ValidationError(PersistentVolume.spec): unknown field "cifs" in io.k8s.api.core.v1.PersistentVolumeSpec
