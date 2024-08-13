@@ -1,2 +1,2 @@
 
-kubectl get nodes -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | xargs -I {} ssh {} "apt-get list --installed | grep cifs-utils"
+        requests.post(f"http://0.0.0.0:8040/start?start_date={previous_date}&end_date={current_date}")
