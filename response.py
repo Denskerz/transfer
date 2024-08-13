@@ -1,30 +1,72 @@
-from fastapi import FastAPI
-import asyncio
+values
 
-app = FastAPI()
+persistentVolume:
+  name: cifs-pv
+  server: //SBERORM-WIN-IFT
+  shareName: CRZ-Test
+  secretName: cifs-secret
+  storageSize: 5Gi
 
-# Определяем глобальные переменные, которые будут использоваться в приложении
-global_variable1 = None
-global_variable2 = None
+persistentVolumeClaim:
+  name: cifs-pvc
+  storageSize: 5Gi
 
-@app.on_event("startup")
-async def startup_event():
-    # Инициализируем глобальные переменные в фоновой задаче
-    await initialize_global_variables()
 
-async def initialize_global_variables():
-    global global_variable1, global_variable2
 
-    # Здесь вы можете выполнить любую необходимую логику для инициализации переменных
-    global_variable1 = "Значение 1"
-    global_variable2 = "Значение 2"
-
-    print("Глобальные переменные инициализированы")
-
-# Теперь вы можете использовать global_variable1 и global_variable2 в ваших маршрутах
-@app.get("/")
-def root():
-    return {
-        "global_variable1": global_variable1,
-        "global_variable2": global_variable2
-    }
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Values.persistentVolume.name }}
+spec:
+  capacity:
+    storage: {{ .Values.persistentVolume.storageSize }}
+  accessModes:
+  - ReadWriteOnce
+  cifs:
+    secretRef:
+      name: {{ .Values.persistentVolume.secretName }}
+    server: {{ .Values.persistentVolume.server }}
+    shareName: {{ .Values.persistentVolume.shareName }}
+    readOnly: false
+    
+    
+    
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.persistentVolumeClaim.name }}
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.persistentVolumeClaim.storageSize }}
+    
+    
+    
+    apiVersion: apps/v1
+kind: Deployment
+spec:
+  template:
+    spec:
+      containers:
+      - name: my-container
+        volumeMounts:
+        - name: cifs-volume
+          mountPath: /data
+      volumes:
+      - name: cifs-volume
+        persistentVolumeClaim:
+          claimName: {{ .Values.persistentVolumeClaim.name }}
+        
+        
+        
+        apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.persistentVolume.secretName }}
+type: Opaque
+stringData:
+  username: {{ .Values.persistentVolume.username }}
+  password: {{ .Values.persistentVolume.password }}
+  domain: {{ .Values.persistentVolume.domain }}
