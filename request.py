@@ -1,1 +1,1 @@
-Error: UPGRADE FAILED: error validating "": error validating data: ValidationError(PersistentVolume.spec): unknown field "cifs" in io.k8s.api.core.v1.PersistentVolumeSpec
+Error: UPGRADE FAILED: rendered manifests contain a resource that already exists. Unable to continue with update: could not get information about the resource: persistentvolumes "cifs-pv" is forbidden: User "system:serviceaccount:users-custom-sa:devops-bzi" cannot get resource "persistentvolumes" in API group "" at the cluster scope
