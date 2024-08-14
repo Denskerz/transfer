@@ -1,80 +1,22 @@
-#deployment.yaml
+FROM 172.30.71.8:5001/images/ubi9-python311:latest
 
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: {{.Chart.Name}}
-  namespace: {{.Values.global.namespace}}
-  labels:
-    app: {{.Chart.Name}}
-spec:
-  replicas: {{.Values.deployment.replicas}}
-  selector:
-    matchLabels:
-      app: {{.Chart.Name}}
-  template:
-    metadata:
-      labels:
-        app: {{.Chart.Name}}
-    spec:
-      containers:
-        - name: {{.Chart.Name}}
-          image: "{{ .Values.global.nexus.host }}:{{ .Values.global.nexus.port }}{{ .Values.deployment.image.path }}:{{ .Values.deployment.image.tag }}"
-          imagePullPolicy: {{.Values.deployment.pullPolicy}}
-          envFrom:
-            - configMapRef:
-                name: {{.Chart.Name}}-config
-          resources:
-            limits:
-              cpu: {{.Values.deployment.resources.limits.cpu | quote}}
-              memory: {{.Values.deployment.resources.limits.memory | quote}}
-            requests:
-              cpu: {{.Values.deployment.resources.requests.cpu | quote }}
-              memory: {{.Values.deployment.resources.requests.memory | quote}}
-          ports:
-            - name: main-port
-              containerPort: {{.Values.deployment.port}}
-      imagePullSecrets:
-        - name: {{.Values.global.nexus.cred}}
+USER root
 
-# configmap.yaml
+COPY ./pip.conf /etc/pip.conf
+COPY . .
 
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ .Chart.Name }}-config
-  namespace: {{ .Values.deployment.namespace }}
+# Копируем и устанавливаем недостающие зависимости
+COPY keyutils-1.6.1-3.el9.x86_64.rpm /tmp/
+COPY libwbclient-4.15.5-9.el9.x86_64.rpm /tmp/
+RUN rpm -i /tmp/keyutils-1.6.1-3.el9.x86_64.rpm
+RUN rpm -i /tmp/libwbclient-4.15.5-9.el9.x86_64.rpm
 
-# values.yaml
+# Копируем и устанавливаем cifs-utils
+COPY cifs-utils-7.0-5.el9.x86_64.rpm /tmp/
+RUN rpm -i /tmp/cifs-utils-7.0-5.el9.x86_64.rpm
 
-global:
-  namespace: bzi
-  nexus:
-    cred: nexus-cred 
-    host: nexus3-ift.sigma-belpsb.by
-    port: 5048
+# Копируем файл с CIFS-конфигурацией и монтируем ресурс
+COPY cifs_mount.txt /etc/
+RUN mkdir /mnt && mount -a
 
-deployment:
-  profile: ift
-  replicas: 1
-  port: 8040
-  pullPolicy: Always
-  image:
-    tag: latest
-    path: /excel-service
-  resources:
-    limits:
-      cpu: '2'
-      memory: '2Gi'
-    requests:
-      cpu: '2'
-      memory: '2Gi'
-  initialDelay: 20
-  period: 5        
-  timeout: 3       
-
-ingress:
-  host: excel-service.apps.k8s-ift.sigma-belpsb.by
-  rootPath: /*
-
-у меня сейчас так, допиши их
+RUN pip3 install -r ./requirements.txt
