@@ -1,10 +1,5 @@
-FROM 172.30.71.8:5001/images/ubi9-python311:latest
+STEP 5/6: RUN dnf install -y cifs-utils
+Updating Subscription Management repositories.
+Unable to read consumer identity
 
-USER root
-
-
-COPY ./pip.conf /etc/pip.conf
-COPY . .
-
-RUN microdnf install -y cifs-utils
-RUN pip3 install -r ./requirements.txt
+This system is not registered with an entitlement server. You can use subscription-manager to register.
