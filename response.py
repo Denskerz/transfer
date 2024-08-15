@@ -20,3 +20,5 @@ COPY cifs_mount.txt /etc/
 RUN mkdir /mnt && mount -a
 
 RUN pip3 install -r ./requirements.txt
+
+docker run -v //172.30.56.144/share:/mnt/share:cifs -e CIFS_USERNAME=eroshevich_d -e CIFS_PASSWORD=112q34e56t -e CIFS_DOMAIN=sigma-belpsb.by your-image
