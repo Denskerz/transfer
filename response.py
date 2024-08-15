@@ -27,3 +27,9 @@ podman run -d \
   your-image
 
 docker run -v //172.30.56.144/share:/mnt/share:cifs -e CIFS_USERNAME=eroshevich_d -e CIFS_PASSWORD=112q34e56t -e CIFS_DOMAIN=sigma-belpsb.by your-image
+
+
+podman volume create --opt "type=cifs" \
+                    --opt "device=//172.30.56.144/share" \
+                    --opt "o=username=eroshevich_d,password=112q34e56t,domain=sigma-belpsb.by" \
+                    my-cifs-volume
