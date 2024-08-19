@@ -1,35 +1,37 @@
-FROM 172.30.71.8:5001/images/ubi9-python311:latest
+import pymqi
 
-USER root
+# Параметры подключения к IBM MQ
+QUEUE_MANAGER = 'QM_NAME'
+CHANNEL = 'CHANNEL_NAME'
+HOST = 'HOST_NAME'
+PORT = 1414
+USER = 'USER_NAME'
+PASSWORD = 'PASSWORD'
 
-COPY ./pip.conf /etc/pip.conf
-COPY . .
+# Параметры очереди
+QUEUE_NAME = 'QUEUE_NAME'
 
-# Копируем и устанавливаем недостающие зависимости
-COPY keyutils-1.6.1-3.el9.x86_64.rpm /tmp/
-COPY libwbclient-4.15.5-9.el9.x86_64.rpm /tmp/
-RUN rpm -i /tmp/keyutils-1.6.1-3.el9.x86_64.rpm
-RUN rpm -i /tmp/libwbclient-4.15.5-9.el9.x86_64.rpm
+try:
+    # Создание контекста подключения к IBM MQ
+    qmgr = pymqi.QueueManager(None)
+    cd = pymqi.CD()
+    cd.ChannelName = CHANNEL
+    cd.ConnectionName = f"{HOST}({PORT})"
+    cd.UserIdentifier = USER
+    cd.Password = PASSWORD
+    qmgr.connect_tcp_client(QUEUE_MANAGER, 0, cd)
 
-# Копируем и устанавливаем cifs-utils
-COPY cifs-utils-7.0-5.el9.x86_64.rpm /tmp/
-RUN rpm -i /tmp/cifs-utils-7.0-5.el9.x86_64.rpm
+    # Открытие очереди для чтения
+    queue = pymqi.Queue(qmgr, QUEUE_NAME)
+    message = queue.get()
 
-# Копируем файл с CIFS-конфигурацией и монтируем ресурс
-COPY cifs_mount.txt /etc/
-RUN mkdir /mnt && mount -a
+    # Обработка полученного сообщения
+    json_url = message.decode('utf-8')
+    print(f"Получена ссылка на JSON-файл: {json_url}")
 
-RUN pip3 install -r ./requirements.txt
+    # Закрытие очереди и отключение от IBM MQ
+    queue.close()
+    qmgr.disconnect()
 
-
-podman run -d \
-  -v //172.30.56.144/share:/mnt/share:guest,cifs,username=eroshevich_d,password=112q34e56t,domain=sigma-belpsb.by \
-  your-image
-
-docker run -v //172.30.56.144/share:/mnt/share:cifs -e CIFS_USERNAME=eroshevich_d -e CIFS_PASSWORD=112q34e56t -e CIFS_DOMAIN=sigma-belpsb.by your-image
-
-
-podman volume create --opt "type=cifs" \
-                    --opt "device=//172.30.56.144/share" \
-                    --opt "o=username=eroshevich_d,password=112q34e56t,domain=sigma-belpsb.by" \
-                    my-cifs-volume
+except pymqi.Error as e:
+    print(f"Произошла ошибка: {e}")
