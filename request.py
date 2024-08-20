@@ -1,3 +1,46 @@
+import pymqi
+import json
+import pandas as pd
+
+# Параметры подключения
+HOST = 'mb-gw3psifs.belpsb.by'
+PORT = 1414
+CHANNEL = 'BZI.SVRCONN'
+QUEUE_MANAGER = 'MBY.ESB.AC0.GW3'
+QUEUE_NAME = 'ESB.BZI.REQUEST'
+USER = 'bziusr'
+PASSWORD = 'your_password_here'
+
+# Создание контекста соединения
+qmgr = pymqi.QueueManager(None)
+cd = pymqi.CD()
+cd.ChannelName = CHANNEL
+cd.ConnectionName = f'{HOST}({PORT})'
+cd.UserIdentifier = USER
+cd.Password = PASSWORD
+qmgr.connect_with_options(QUEUE_MANAGER, cd)
+
+# Создание очереди
+queue = pymqi.Queue(qmgr, QUEUE_NAME)
+
+# Получение сообщения
+message = queue.get()
+
+# Разбор полученного сообщения
+data = json.loads(message)
+url = data['url']
+
+# Получение датафрейма из JSON-файла
+df = pd.read_json(url)
+
+# Закрытие соединения
+queue.close()
+qmgr.disconnect()
+
+# Работа с полученным датафреймом
+print(df)
+
+
 есть некоторые данные, которые могут помочь для подключения к очереди IBM-MQ:
 
 AdapterCURS; 20240813_1250
