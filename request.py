@@ -1,9 +1,18 @@
-https://github.com/dsuch/pymqi/tree/main/code
+есть некоторые данные, которые могут помочь для подключения к очереди IBM-MQ:
 
-If you use optional Oracle configuration files such as tnsnames.ora, sqlnet.ora or oraaccess.xml with Instant Client, then put the files in an accessible directory, for example in /opt/oracle/your_config_dir. Then use:
+AdapterCURS; 20240813_1250
+AppDirectoryData; 20240813_1433
+AdapterBZI.20240603_1245
+для ПСИ\ПРОМа в домене BELPSB зарегистрирован пользователь bziusr и группа bzimqi
+пользователь bziusr добавлен в группу mqmmqi и bzimqi.
+параметры подключения к КСШ на ПСИ для АС "База залогового имущества" :
+хост: mb-gw3psifs.belpsb.by
+порт 1414
+менеджер: MBY.ESB.AC0.GW3
+канал BZI.SVRCONN
+шифрование TLS_RSA_WITH_AES_128_CBC_SHA256
+SSL ключи те же что и для ИФТ контура
+Очередь для получения нотификаций (в том числе sendDirectoryDataNf): ESB.BZI.REQUEST
 
-import cx_Oracle
-cx_Oracle.init_oracle_client(config_dir="/opt/oracle/your_config_dir")
-Or set the environment variable TNS_ADMIN to that directory name.
-
-Alternatively, put the files in the network/admin subdirectory of Instant Client, for example in /usr/lib/oracle/21/client64/lib/network/admin. This is the default Oracle configuration directory for executables linked with this Instant Client.
+суть задачи:
+необходимо написать подключение к очереди ibm-mq на python, мой сервис будет ждать сообщение, которое мне отправят, в сообщении будет ссылка на json файл, из которого необходимо будет забрать датафрейм 
