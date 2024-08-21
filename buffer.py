@@ -1,37 +1,17 @@
-1. Пререквизиты:
-а) установленный и керберизированный кластер hadoop
-б) установленный кластер opensearch
-в) 3 сервера для компонентов графовой платформы: fastgraph, bigraph, gss-rest
-2. Установка hadoop кластера
-Кластер устанавливается на основе ambari, для установки необходимо:
-a) сделать локальный репозиторий с пакетами сборки hadoop и ambari и прописать его в настройках
-всех хостов кластера:
-понадобятся пакеты nginx, createrepo, yum-utils
-Создаем папку
-mkdir -p /usr/share/nginx/html/repos/7/{os,updates}/x86_64
-Создаем репозитории:
-createrepo -v /usr/share/nginx/html/repos/7/os/x86_64
-createrepo -v /usr/share/nginx/html/repos/7/updates/x86_64
-А также разрешаем группы:
-createrepo /usr/share/nginx/html/repos/7/os/x86_64 -g /usr/share/nginx/html/repos/7/os/x86_64/repodata/
-repomd.xml
-createrepo /usr/share/nginx/html/repos/7/updates/x86_64 -g /usr/share/nginx/html/repos/updates/os/
-x86_64/repodata/repomd.xml
-Настраиваем nginx:
-vi /etc/nginx/conf.d/default.confvi /etc/nginx/conf.d/default.conf
-...
-location / {
-root /usr/share/nginx/html;
-index index.html index.htm;
-autoindex on;
-}
-...
-Перезапускаем nginx: sudo systemctl restart nginx
-Создаем файл с настройкой репозитория:
-vi /etc/yum.repos.d/local.repo
-[local]
-name=Local Yum Repo
-baseurl=http://192.168.0.10/repos/$releasever/os/$basearch/
-enabled=1
-gpgcheck=0
-terepo yum-utils creat
+обьясни подробно
+После установки кластера понадобится установить ipa-server или реквизиты от уже существующего,
+все сервера (все hadoop ноды, opensearh ноды и сервера с компонентами ГП) должны быть подключены
+к этому инстансу ipa:
+sudo ipa-client-install --hostname='graf-ift-h4.hdp.test' --realm='HDP.TEST' --domain='hdp.test' --
+server='ipa.hdp.test' --force-join
+Для каждой ноды должны быть A и PTR записи, зону можно создать в freeipa (тогда нужно указывать ее
+в качестве DNS сервера на нодах)
+После запуска ambari-server необходимо подключить хосты hadoop кластера, импортировать stack
+компонентов hadoop и начать поэтапную установку сервисов.
+В первую очередь ставится zookeeper, во вторую hdfs и после его установки нужно из меню ACTIONS
+компонента запустить и установить HA mode для компонента.
+В третью очередь ставятся yarn и зависимости, после установки yarn тоже нужно настроить в HA
+mode.
+Далее поочередно или все вместе устанавливаются остальные компоненты hadoop.
+Установку kerberos можно запустить или сразу после установки HA mode yarn или в конце, после
+установки всех сервисов.
