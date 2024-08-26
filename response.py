@@ -1,3 +1,4 @@
+https://ambidextrous-dev.medium.com/using-cifs-volumes-in-kubernetes-d450ea1cb0e4
 import pymqi
 
 # Параметры подключения к IBM MQ
