@@ -8,11 +8,9 @@ from subprocess import check_output, CalledProcessError
 
 # SSH connection details
 SSH_HOST = "172.30.56."
-SSH_USER = "graf_user"
-SSH_PASSWORD = "graf_pao_user"
+SSH_USER = "Z3JhZl91c2VyCg=="
+SSH_PASSWORD = "Z3JhZl9wYW9fdXNlcg=="
 
-encoded_user = base64.b64encode(SSH_USER.encode()).decode()
-encoded_password = base64.b64encode(SSH_PASSWORD.encode()).decode()
 
 kinit_command = "kinit -kt ~/admin.keytab admin@HDP.TEST"
 kinit_args = kinit_command.split(' ')
@@ -42,7 +40,9 @@ def run_kinit():
             # Establish SSH connection
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(host, username=SSH_USER, password=SSH_PASSWORD)
+            ssh.connect(host, 
+                        username=base64.b64decode(SSH_USER).decode('utf-8'), 
+                        password=base64.b64decode(SSH_PASSWORD).decode('utf-8'))
 
             # Execute the kinit command on the remote server
             stdin, stdout, stderr = ssh.exec_command(kinit_command)
@@ -57,6 +57,7 @@ def run_kinit():
             ssh.close()
         except Exception as e:
             logging.error(f"Error connecting to the remote server {host}: {e}")
+
 
 # Scheduling the script to run daily at 12:00 AM (midnight)
 schedule.every(1).minutes.do(run_kinit)
