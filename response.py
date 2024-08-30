@@ -1,17 +1,21 @@
 
 
-
-{model_id: "XXX",
-tables: [
-{id_table: 'XXX",
-features: [feature_1, feature_2]},
-{id_table: 'XXX',
-features: [feature_1, feature_2]}
-],
-train_csv: 'name_csv",
-tests: XXX
-upload: True/False
-response: True/False
+{
+    "model_id": "XXX",
+    "tables": [
+        {
+            "id_table": "XXX",
+            "features": ["feature_1", "feature_2"]
+        },
+        {
+            "id_table": "XXX",
+            "features": ["feature_1", "feature_2"]
+        }
+    ],
+    "train_csv": "name_csv",
+    "tests": "XXX",
+    "upload": true,
+    "response": true
 }
 
 
