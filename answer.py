@@ -1,13 +1,1 @@
-#!/bin/bash
-
-# Находим PID процессов, которые используют указанную команду
-pids=$(pgrep -f "/usr/jdk64/jdk1.8.0_112/bin/java -cp dhsjs")
-
-# Проверяем, найдены ли процессы
-if [ -z "$pids" ]; then
-    echo "Процессы не найдены."
-else
-    # Убиваем найденные процессы
-    echo "Убиваем процессы с PID: $pids"
-    kill $pids
-fi
+Error: writing blob: adding layer with blob "sha256:64225c2b3ca29f8b51a315a1e2b052c87409612cf221ca051816fa37eae50d71": creating read-only layer with ID "94c9a3a943ff74b1028ebf9b24735f8c0643409ec4424458923677caf9419893": Stat /var/lib/containers/storage/overlay/0a7f807d74e18e919a624c5dd2ff4bc9863a86671297aa0f096693182a3ccf5e/diff: no such file or directory
