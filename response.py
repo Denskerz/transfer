@@ -1,58 +1,33 @@
+from airflow import DAG
+from airflow.operators.python import PythonOperator
+from airflow.operators.email import EmailOperator
+from datetime import datetime
+import os
+
+# Функция для получения файлов
+def get_files(**kwargs):
+    folder_path = '/path/to/your/folder'
+    files = os.listdir(folder_path)
+    return [os.path.join(folder_path, file) for file in files]
+
+# DAG
+with DAG('send_files_dag', start_date=datetime(2023, 1, 1), schedule_interval='@daily') as dag:
+    
+    get_files_task = PythonOperator(
+        task_id='get_files',
+        python_callable=get_files,
+        provide_context=True,
+    )
+
+    send_email_task = EmailOperator(
+        task_id='send_email',
+        to='recipient@example.com',
+        subject='Files from folder',
+        html_content='Please find the attached files.',
+        files=get_files_task.output,
+    )
+
+    get_files_task >> send_email_task
 
 
-{
-    "model_id": "XXX",
-    "tables": [
-        {
-            "id_table": "XXX",
-            "features": ["feature_1", "feature_2"]
-        },
-        {
-            "id_table": "XXX",
-            "features": ["feature_1", "feature_2"]
-        }
-    ],
-    "train_csv": "name_csv",
-    "tests": "XXX",
-    "upload": true,
-    "response": true
-}
 
-
-import pymqi
-
-# Параметры подключения к IBM MQ
-QUEUE_MANAGER = 'QM_NAME'
-CHANNEL = 'CHANNEL_NAME'
-HOST = 'HOST_NAME'
-PORT = 1414
-USER = 'USER_NAME'
-PASSWORD = 'PASSWORD'
-
-# Параметры очереди
-QUEUE_NAME = 'QUEUE_NAME'
-
-try:
-    # Создание контекста подключения к IBM MQ
-    qmgr = pymqi.QueueManager(None)
-    cd = pymqi.CD()
-    cd.ChannelName = CHANNEL
-    cd.ConnectionName = f"{HOST}({PORT})"
-    cd.UserIdentifier = USER
-    cd.Password = PASSWORD
-    qmgr.connect_tcp_client(QUEUE_MANAGER, 0, cd)
-
-    # Открытие очереди для чтения
-    queue = pymqi.Queue(qmgr, QUEUE_NAME)
-    message = queue.get()
-
-    # Обработка полученного сообщения
-    json_url = message.decode('utf-8')
-    print(f"Получена ссылка на JSON-файл: {json_url}")
-
-    # Закрытие очереди и отключение от IBM MQ
-    queue.close()
-    qmgr.disconnect()
-
-except pymqi.Error as e:
-    print(f"Произошла ошибка: {e}")
