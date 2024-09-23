@@ -1,4 +1,15 @@
-persistentVolume и persistentVolumeClaim уже прописаны в кубере
+apiVersion: v1
+kind: Secret
+metadata:
+  name: pv-creds-cifs-bzi
+  namespace: kube-system
+type: Opaque
+data:
+  username: QlppX1RlY2g=
+  password: MjMzNDU2Nzg=
+  
+  
+  persistentVolume и persistentVolumeClaim уже прописаны в кубере
 persistentVolume:
 apiVersion: v1
 kind: PersistentVolume
