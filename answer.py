@@ -20,3 +20,8 @@ pipeline {
         }
     }
 }
+
+
+Also:   org.jenkinsci.plugins.workflow.actions.ErrorAction$ErrorId: 76c8f737-8aea-4847-9601-7f3ad70cc15f
+hudson.remoting.ProxyException: groovy.lang.MissingMethodException: No signature of method: java.util.ArrayList.collect() is applicable for argument types: (org.codehaus.groovy.runtime.GStringImpl) values: ["null"]
+Possible solutions: collect(), collect(), collect(groovy.lang.Closure), collect(groovy.lang.Closure), collect(java.util.Collection, groovy.lang.Closure), collect(java.util.Collection, groovy.lang.Closure)
