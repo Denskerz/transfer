@@ -9,8 +9,12 @@
         state: present
         insertbefore: BOF  # Вставляет строку в начало файла
 
-    - name: Заменить все строки ".." на "{model_path}"
+    - name: Заменить строки с использованием цикла
       replace:
         path: /path/to/your/file
-        regexp: '^\.\.$'  # Регулярное выражение для строки ".."
-        replace: '{model_path}'
+        regexp: "{{ item.regexp }}"
+        replace: "{{ item.replace }}"
+      loop:
+        - { regexp: '=\s*f?"(\.\./shshsj)"', replace: '= f"{model_path}/shshsj"' }
+        - { regexp: 'ansi', replace: 'cp1251' }
+        - { regexp: '«,', replace: '«.' }
