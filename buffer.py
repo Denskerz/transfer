@@ -1,31 +1,23 @@
 #!/bin/bash
 
-# Prompt for the folder path to archive
-read -p "Enter the path to the folder to archive: " folder_path
+# Prompt for the folder path
+read -p "Enter the path to the folder for archiving: " folder_path
 
-# Check if the folder exists
-if [ ! -d "$folder_path" ]; then
-    echo "Folder not found. Please check the path."
-    exit 1
-fi
+# Prompt for the remote server address
+read -p "Enter the remote server address: " remote_server
 
-# Prompt for the output folder path
-read -p "Enter the path to the folder to save the archives: " output_path
+# Prompt for the folder path on the remote server to save the archive
+read -p "Enter the path to the folder on the remote server to save the archive: " remote_folder
 
-# Check if the output folder exists
-if [ ! -d "$output_path" ]; then
-    echo "Output folder not found. Creating the folder..."
-    mkdir -p "$output_path"
-fi
+# Archive the folder and split into 10 parts
+ssh "$remote_server" "tar -czf - '$folder_path' | split -b 10M - '${remote_folder}/archive_part_'"
 
-# Create the archive
-archive_name="archive.zip"
-zip -r "$output_path/$archive_name" "$folder_path"
+# Exit from the remote server (ssh will automatically close after the command)
 
-# Split the archive into parts of 10 MB
-split -b 10M "$output_path/$archive_name" "$output_path/${archive_name%.zip}-part_"
+# Copy the necessary files to Windows
+# Make sure you have WinSCP or another SCP client installed
+read -p "Enter the path to the files on the remote server to copy: " remote_files_path
+read -p "Enter the path on your computer to save the files: " local_save_path
 
-# Optionally remove the original archive
-# rm "$output_path/$archive_name"
-
-echo "Archiving and splitting completed. Archives saved in $output_path."
+# Use WinSCP to copy files
+winscp.com /command "open sftp://$remote_server" "get '$remote_files_path/*' '$local_save_path'" "exit"
