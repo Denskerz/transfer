@@ -18,3 +18,12 @@
         - { regexp: '=\s*f?"(\.\./shshsj)"', replace: '= f"{model_path}/shshsj"' }
         - { regexp: 'ansi', replace: 'cp1251' }
         - { regexp: '«,', replace: '«.' }
+        - { regexp: '^input_filepath.*$', replace: '«hello»' }  # Заменяет строку input_filepath на «hello»
+
+    - name: Добавить строку input_filepath, если её нет
+      lineinfile:
+        path: /path/to/your/file
+        line: 'input_filepath'
+        state: present
+      when: >
+        not (lookup('file', '/path/to/your/file').find('input_filepath') != -1)
