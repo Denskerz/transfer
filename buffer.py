@@ -1,1 +1,42 @@
-fatal: [dev]: FAILED! => {"msg": "The conditional check 'not (lookup('file', '{{ workdir }}/scripts/config.py').find(item.check) != -1)\n' failed. The error was: An unhandled exception occurred while running the lookup plugin 'file'. Error was a <class 'ansible.errors.AnsibleError'>, original message: could not locate file in lookup: /opt/test/099_test//scripts/config.py\n\nThe error appears to be in '/var/lib/jenkins/workspace/DataScience/test_models/099_model/deploy/ansible/roles/default/tasks/main.yaml': line 93, column 9, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n    block:\n      - name: ???????? ?????? {{ item }} ???? ?? ???\n        ^ here\nWe could be wrong, but this one looks like it might be an issue with\nmissing quotes. Always quote template expression brackets when they\nstart a value. For instance:\n\n    with_items:\n      - {{ foo }}\n\nShould be written as:\n\n    with_items:\n      - \"{{ foo }}\"\n"}
+---
+- name: Изменение содержимого файла
+  hosts: localhost
+  vars:
+    workdir: /path/to/your  # Задайте значение переменной workdir здесь
+
+  tasks:
+    - name: Добавить строку в начало файла
+      lineinfile:
+        path: "{{ workdir }}/file"
+        line: 'model_path = "/path/to/model"'
+        state: present
+        insertbefore: BOF  # Вставляет строку в начало файла
+
+    - name: Заменить строки с использованием цикла
+      replace:
+        path: "{{ workdir }}/file"
+        regexp: "{{ item.regexp }}"
+        replace: "{{ item.replace }}"
+      loop:
+        - { regexp: '=\s*f?"(\.\./shshsj)"', replace: '= f"{model_path}/shshsj"' }
+        - { regexp: 'ansi', replace: 'cp1251' }
+        - { regexp: '«,', replace: '«.' }
+        - { regexp: '^input_filepath.*$', replace: '«hello»' }  # Заменяет строку input_filepath на «hello»
+
+    - name: Чтение файла для проверки наличия строк
+      slurp:
+        src: "{{ workdir }}/file"
+      register: file_contents
+
+    - name: Обработать input_filepath и output_filepath
+      block:
+        - name: Добавить строку {{ item }} если её нет
+          lineinfile:
+            path: "{{ workdir }}/file"
+            line: "{{ item.line }}"
+            state: present
+          when: >
+            item.check not in file_contents.content | b64decode
+          loop:
+            - { line: 'input_filepath = f"../shshsj"', check: 'input_filepath = f"../shshsj"' }
+            - { line: 'output_filepath = f"../output"', check: 'output_filepath = f"../output"' }
