@@ -26,3 +26,19 @@ fi
 # Optional: List the created parts
 echo "Created parts:"
 ls -lh "$DEST_DIR/part_"*
+
+
+#!/bin/bash
+
+# Путь к папке с частями
+PARTS_DIR="/path/to/archive"
+
+# Объединяем части в один файл
+echo "Combining archive parts..."
+cat "$PARTS_DIR/part_"* > "$PARTS_DIR/combined_archive.tar.gz"
+
+# Разархивируем объединённый архив
+echo "Extracting the combined archive..."
+tar -xzf "$PARTS_DIR/combined_archive.tar.gz" -C "$PARTS_DIR"
+
+echo "Archive extracted successfully."
