@@ -1,37 +1,4 @@
-import curses
+15:53:58  task path: /var/lib/jenkins/workspace/DataScience/rbl_model_service/rbl_model_service_deploy-host/rbl_model_service/ansible/roles/rbl_model_service/tasks/main.yaml:85
+15:53:59  fatal: [dev]: FAILED! => {"changed": true, "cmd": "/bin/podman run  -ti -d  --restart always  --name \"rbl_model_service\" -e FLASK_APP=\"/opt/rbl_model_service/main.py\"  -e PYAPP=main.py  -e PYAPP_HOME=\"/opt/rbl_model_service\" -v \"/opt/deploy/rbl_model_service\":\"/opt/rbl_model_service/external_dir\"  -p 7001:7001  \"172.30.71.8:5001/images/rbl_model_service:202401301725\"  bash -l -c \"/bin/bash\" #bash -l -c \"python3 -m uvicorn --host 0.0.0.0 --port 7010 main:app\"\n", "delta": "0:00:00.592211", "end": "2024-02-26 15:53:59.803752", "msg": "non-zero return code", "rc": 126, "start": "2024-02-26 15:53:59.211541", "stderr": "Error: cannot listen on the TCP port: listen tcp4 :7001: bind: address already in use", "stderr_lines": ["Error: cannot listen on the TCP port: listen tcp4 :7001: bind: address already in use"], "stdout": "", "stdout_lines": []}
 
-def main(stdscr):
-    # Очищаем экран
-    stdscr.clear()
-    
-    # Начальный текст
-    text = "Редактируйте этот текст и нажмите F9 для сохранения."
-    
-    while True:
-        stdscr.clear()
-        stdscr.addstr(0, 0, text)
-        stdscr.addstr(2, 0, "Нажмите F9 для сохранения и выхода")
-        stdscr.addstr(3, 0, "Нажмите F10 для выхода без сохранения")
 
-        # Обновляем экран
-        stdscr.refresh()
-
-        # Получаем ввод от пользователя
-        key = stdscr.getch()
-
-        # Обработка клавиш
-        if key == curses.KEY_BACKSPACE or key == 127:
-            text = text[:-1]  # Удаляем последний символ
-        elif key == curses.KEY_ENTER or key in [10, 13]:
-            break  # Завершаем редактирование
-        elif key in (curses.KEY_F9, ord('s')):  # Сохранение
-            with open('output.txt', 'w') as f:
-                f.write(text)
-            break
-        elif key in (curses.KEY_F10, ord('q')):  # Выход без сохранения
-            break
-        else:
-            text += chr(key)  # Добавляем введенный символ
-
-if __name__ == "__main__":
-    curses.wrapper(main)
