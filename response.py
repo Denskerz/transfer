@@ -1,1 +1,37 @@
-copying layers and metadata for container "aedd277e1d061283a54799af54c7249a7b5def80acbf03a38bcb3278ae27c80b": writing blob: adding layer with blob "sha256:036db1111b3eff0f5b8ce029c3f091f7097b5d7431f1e859ae72cf95aa4a4e5f": processing tar file(write /opt/gigachat_service/.git/objects/pack/pack-aab5b2c4df810498bd6ba88b7158c39ddfe2571e.pack: no space left on device): exit status 1
+import curses
+
+def main(stdscr):
+    # Очищаем экран
+    stdscr.clear()
+    
+    # Начальный текст
+    text = "Редактируйте этот текст и нажмите F9 для сохранения."
+    
+    while True:
+        stdscr.clear()
+        stdscr.addstr(0, 0, text)
+        stdscr.addstr(2, 0, "Нажмите F9 для сохранения и выхода")
+        stdscr.addstr(3, 0, "Нажмите F10 для выхода без сохранения")
+
+        # Обновляем экран
+        stdscr.refresh()
+
+        # Получаем ввод от пользователя
+        key = stdscr.getch()
+
+        # Обработка клавиш
+        if key == curses.KEY_BACKSPACE or key == 127:
+            text = text[:-1]  # Удаляем последний символ
+        elif key == curses.KEY_ENTER or key in [10, 13]:
+            break  # Завершаем редактирование
+        elif key in (curses.KEY_F9, ord('s')):  # Сохранение
+            with open('output.txt', 'w') as f:
+                f.write(text)
+            break
+        elif key in (curses.KEY_F10, ord('q')):  # Выход без сохранения
+            break
+        else:
+            text += chr(key)  # Добавляем введенный символ
+
+if __name__ == "__main__":
+    curses.wrapper(main)
