@@ -1,1 +1,2 @@
-sudo iptables -t nat -A OUTPUT -p tcp --dport 80 -j REDIRECT --to-ports 7110 
+# Убедитесь, что iptables установлен
+sudo iptables -t nat -A POSTROUTING -p tcp --dport 80 -j SNAT --to-source <IP-хоста>:7110
