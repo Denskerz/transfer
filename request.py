@@ -7,3 +7,6 @@ curl -L --insecure -x 172.30.71.80:3128 -X POST 'http://172.30.71.10:50510/api/v
 
 
 curl -L --insecure -x 172.30.71.80:3128 -X POST 'http://172.30.71.10:50511/api/v1/chat/completions' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'Authorization: Bearer токен' --data-raw '{  "model": "GigaChat",  "messages": [    {      "role": "system",      "content": "Ты опытный специалит контакт-центра Банка"    },    {      "role": "user",      "content": "текст"    }  ],  "temperature":1,  "top_p":0.1,  "n": 1,  "stream": false,  "max_tokens":100,  "update_interval": 0}'
+
+
+{"choices":[{"message":{"content":"Здравствуйте! Я могу вам помочь?","role":"assistant"},"index":0,"finish_reason":"stop"}],"created":1728656361,"model":"GigaChat:3.1.25.3","object":"chat.completion","usage":{"prompt_tokens":23,"completion_tokens":12,"total_tokens":35}}
