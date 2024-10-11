@@ -1,14 +1,1 @@
-
-HTTP/1.1 403 Forbidden
-Server: squid/3.5.20
-Mime-Version: 1.0
-Date: Fri, 11 Oct 2024 07:54:34 GMT
-Content-Type: text/html;charset=utf-8
-Content-Length: 3542
-X-Squid-Error: ERR_ACCESS_DENIED 0
-Vary: Accept-Language
-Content-Language: en
-X-Cache: MISS from squid-dkb.sigma-belpsb.by
-X-Cache-Lookup: NONE from squid-dkb.sigma-belpsb.by:3128
-Via: 1.1 squid-dkb.sigma-belpsb.by (squid/3.5.20)
-Connection: keep-alive
+### OAUTH curl -L --insecure -x 172.30.71.80:3128 -X POST 'http://172.30.71.10:50510/api/v2/oauth' \ -H 'Content-Type: application/x-www-form-urlencoded' \ -H 'Accept: application/json' \ -H 'RqUID: 6f0b1291-c7f3-43c6-bb2e-9f3efb2dc98e' \ -H 'Authorization: Basic OGJiZTg3NGEtNjA0OS00NjQ3LTk1YWMtNzVhNDNjNzdmODUxOjU0MTY1OWNhLWI3NDctNDBlZS05MTM3LWY3Y2M0OGY3NWQ4Zg==' \ --data-urlencode 'scope=GIGACHAT_API_CORP'   ### Others curl -L --insecure -x 172.30.71.80:3128 -X POST 'http://172.30.71.10:50511/api/v1/chat/completions' \ -H 'Content-Type: application/json' \ -H 'Accept: application/json' \ -H 'Authorization: 'Bearer взять из oauth' \ --data-raw '{   "model": "GigaChat",   "messages": [     {       "role": "system",       "content": "Ты опытный специалит контакт-центра Банка"     },     {       "role": "user",       "content": " 12082024 14082024 "     }   ],   "temperature":1,   "top_p":0.1,   "n": 1,   "stream": false,   "max_tokens":100,   "update_interval": 0 }'
