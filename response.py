@@ -1,13 +1,16 @@
-Тестирование и развертка моделей в производственную среду; конфигурация серверной инфраструктуры; поддержка сервиса для микросервисного приложения "База залогового имущества"
-teradatasql.OperationalError: [Version 17.20.0.31] [Session 57461646] [Teradata Database] [Error 2644] SP_MOVE_PRED_TO_CODM:No more room in database PROD_DBML.
+import logging
 
-SELECT
-    DatabaseName,
-    SUM(CurrentPerm) AS CurrentPerm,
-    SUM(MaxPerm) AS MaxPerm
-FROM
-    DBC.DiskSpace
-WHERE
-    DatabaseName = 'PROD_DBML'
-GROUP BY
-    DatabaseName;
+# Настройка конфигурации логирования
+logging.basicConfig(
+    level=logging.DEBUG,  # Уровень важности (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+    format='%(asctime)s - %(levelname)s - %(message)s',  # Формат сообщения
+    filename='app.log',  # Файл для записи логов
+    filemode='w'  # Режим записи (w - перезапись, a - добавление)
+)
+
+# Примеры логирования
+logging.debug('Это сообщение отладки')
+logging.info('Это информационное сообщение')
+logging.warning('Это предупреждение')
+logging.error('Это сообщение об ошибке')
+logging.critical('Это критическая ошибка')
