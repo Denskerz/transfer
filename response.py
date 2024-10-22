@@ -1,16 +1,22 @@
-python3.8 -m pip install podman-compose
-Defaulting to user installation because normal site-packages is not writeable
-Looking in indexes: http://nexus3-prod.belpsb.by:8081/repository/pypi-proxy/simple
-Collecting podman-compose
-  Downloading http://nexus3-prod.belpsb.by:8081/repository/pypi-proxy/packages/podman-compose/1.2.0/podman_compose-1.2.0-py2.py3-none-any.whl (39 kB)
-Requirement already satisfied: python-dotenv in /home/gpadmin/.local/lib/python3.8/site-packages (from podman-compose) (1.0.1)
-Requirement already satisfied: pyyaml in /home/gpadmin/.local/lib/python3.8/site-packages (from podman-compose) (6.0.2)
-Installing collected packages: podman-compose
-Successfully installed podman-compose-1.2.0
-[gpadmin@dbsnode22-p server]$ which podman-compose
-~/.local/bin/podman-compose
-[gpadmin@dbsnode22-p server]$ sudo ~/.local/bin/podman-compose up -d
+sudo  /usr/local/bin/podman-compose up -d
+06557fd6cbcd08c6c216130cb2633da58ab0281c2bbe9a799edcb457a1930f28
 Traceback (most recent call last):
-  File "/home/gpadmin/.local/bin/podman-compose", line 5, in <module>
-    from podman_compose import main
-ModuleNotFoundError: No module named 'podman_compose'
+  File "/usr/local/bin/podman-compose", line 8, in <module>
+    sys.exit(main())
+  File "/usr/local/lib/python3.8/site-packages/podman_compose.py", line 3504, in main
+    asyncio.run(async_main())
+  File "/usr/lib64/python3.8/asyncio/runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "/usr/lib64/python3.8/asyncio/base_events.py", line 616, in run_until_complete
+    return future.result()
+  File "/usr/local/lib/python3.8/site-packages/podman_compose.py", line 3500, in async_main
+    await podman_compose.run()
+  File "/usr/local/lib/python3.8/site-packages/podman_compose.py", line 1743, in run
+    retcode = await cmd(self, args)
+  File "/usr/local/lib/python3.8/site-packages/podman_compose.py", line 2500, in compose_up
+    podman_args = await container_to_args(compose, cnt, detached=args.detach)
+  File "/usr/local/lib/python3.8/site-packages/podman_compose.py", line 1095, in container_to_args
+    podman_args.extend(get_net_args(compose, cnt))
+  File "/usr/local/lib/python3.8/site-packages/podman_compose.py", line 955, in get_net_args
+    multiple_nets = {net: net_config or {} for net, net_config in multiple_nets.items()}
+AttributeError: 'str' object has no attribute 'items'
