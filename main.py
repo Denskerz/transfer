@@ -13,17 +13,6 @@ import win32con
 
 from colorama import Fore, Style, init
 
-# Инициализация приоритетов
-PRIORITY_OBJECTS = {
-    "bomb": (0, 0, 0),    # Примерный HSV для бомбы (чёрный или серый)
-    "pigeon": (90, 50, 200),  # Примерный HSV для голубя (голубоватый)
-    "pumpkin": (10, 150, 150)  # HSV для тыквы (оранжевый оттенок)
-}
-def get_priority(object_name):
-    """Возвращает приоритет для сортировки: меньшее значение - более высокий приоритет."""
-    priorities = {"bomb": 1, "pigeon": 2, "pumpkin": 3}
-    return priorities.get(object_name, 999)
-
 # Инициализация для Windows
 init(autoreset=True)
 
@@ -160,39 +149,36 @@ class AutoClicker:
                     img_bgr = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
                     hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
 
-                    detected_objects = []  # Список найденных объектов для сортировки по приоритету
-
-                    for obj_name, target_hsv in PRIORITY_OBJECTS.items():
-                        lower_bound = np.array([max(0, target_hsv[0] - 10), 80, 80])
-                        upper_bound = np.array([min(179, target_hsv[0] + 10), 255, 255])
+                    # Поиск зеленых снежинок
+                    for target_hsv in self.target_hsvs:
+                        lower_bound = np.array([max(0, target_hsv[0] - 5), 100, 100]) 
+                        upper_bound = np.array([min(179, target_hsv[0] + 5), 255, 255]) 
                         mask = cv2.inRange(hsv, lower_bound, upper_bound)
-
                         contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-                        for contour in contours:
+                        for contour in reversed(contours):
+                            if random.random() >= self.percentage_click:
+                                continue
+
                             if cv2.contourArea(contour) < 8:
                                 continue
 
                             M = cv2.moments(contour)
                             if M["m00"] == 0:
                                 continue
-
                             cX = int(M["m10"] / M["m00"]) + monitor["left"]
                             cY = int(M["m01"] / M["m00"]) + monitor["top"]
 
-                            detected_objects.append((obj_name, cX, cY))
+                            if not self.is_near_color(hsv, (cX - monitor["left"], cY - monitor["top"]),
+                                                      self.nearby_hsvs):
+                                continue
 
-                    # Сортировка объектов по приоритету
-                    detected_objects.sort(key=lambda x: get_priority(x[0]))
+                            if any(math.sqrt((cX - px) ** 2 + (cY - py) ** 2) < 35 for px, py in self.clicked_points):
+                                continue
+                            cY += 7
+                            self.click_at(cX, cY)
+                            self.clicked_points.append((cX, cY))
 
-                    # Клик на объекты в порядке приоритета
-                    for obj_name, cX, cY in detected_objects:
-                        if any(math.sqrt((cX - px) ** 2 + (cY - py) ** 2) < 35 for px, py in self.clicked_points):
-                            continue
-
-                        cY += 7  # Корректировка Y
-                        self.click_at(cX, cY)
-                        self.clicked_points.append((cX, cY))
 
                     time.sleep(0.222)
                     self.iteration_count += 1
@@ -202,6 +188,8 @@ class AutoClicker:
                             for tp in self.templates_plays:
                                 self.find_and_click_image(tp, img, monitor)
                         self.iteration_count = 0
+
+        self.logger.log("Игра завершена")  # Уведомление о завершении игры
 
 
 if __name__ == "__main__":
